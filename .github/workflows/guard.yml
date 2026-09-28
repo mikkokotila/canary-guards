@@ -22,6 +22,11 @@ jobs:
           path: target
       - uses: actions/checkout@v4
         with:
+          # Plain checkout would fetch the CALLER repo; name this repo.
+          # main floats inside the trusted repo (Canary PRs cannot reach
+          # it); the workflow file itself stays SHA-pinned by the caller.
+          repository: mikkokotila/canary-guards
+          ref: main
           path: guards
       - uses: actions/setup-python@v5
         with:
