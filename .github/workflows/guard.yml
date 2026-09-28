@@ -1,0 +1,32 @@
+name: guard
+on:
+  workflow_call:
+    inputs:
+      repo:
+        required: true
+        type: string
+      ref:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repo }}
+          ref: ${{ inputs.ref }}
+          path: target
+      - uses: actions/checkout@v4
+        with:
+          path: guards
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q pytest
+      - run: python -m pytest guards/guard/tests -q -p no:cacheprovider
+        env:
+          PR_TREE: ${{ github.workspace }}/target
